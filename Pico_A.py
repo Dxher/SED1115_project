@@ -23,19 +23,20 @@ def transmit():
     uart.write("SET:%d\n" % duty)
     #Show on console what is being sent
     print("Pico A: transmitting ", duty)
+    return duty
 
 # Send PWM value until we receive other Pico's measured value
 received = False
 while not received:
-    transmit()
+    Adata = transmit()
     time.sleep(1)
     if uart.any():
         data = uart.read()
         if data:
             try:
-                data = data.decode('utf-8').strip()
-                print("Pico B measured and sent ", data)
-                print()
+                Bdata = data.decode('utf-8').strip()
+                print("Pico B measured and sent ", Bdata)
+                print("Difference between values: ", abs(Adata - int(Bdata)))
             except ValueError:
                 pass
             received = True

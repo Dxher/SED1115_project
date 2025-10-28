@@ -18,7 +18,7 @@ while not received:
                 print("Received:", data)
             except ValueError:
                 pass
-            # Measure PWM duty cycle
+            # ChatGPT method to Measure PWM duty cycle
             hi = time_pulse_us(pwm_in, 1, 20000)  # time high in microseconds
             lo = time_pulse_us(pwm_in, 0, 20000)  # time low in microseconds
             if hi > 0 and lo > 0:
