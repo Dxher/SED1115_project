@@ -32,12 +32,12 @@ def measure_and_return_pwm():
     adc_value = adc.read(0, ADS1015_PWM)                    # raw digital value (0-2047 for the ADS1015)
     # GPT Calculation
     duty_percent = (adc_value / 2047) * (4.096 / 3.3) * 100 # convert to duty cycle percentage
-    duty_cycle = duty_percent * 65535 / 100  
+    duty_cycle = duty_percent * 65535 / 100                 # convert to 16-bit value
     duty_cycle = int(duty_cycle)
     if duty_cycle < 0:
-        duty_cycle = 0   
+        duty_cycle = 0
     elif duty_cycle > 65535:
-        duty_cycle = 65535    # convert to 16-bit value
+        duty_cycle = 65535
     print("Measured and returned PWM value: ", duty_cycle)
     uart.write("Measured transmit: %d\n" % duty_cycle)
     return duty_cycle
@@ -89,7 +89,6 @@ while True:
         print("Difference between transmitted and measured PWM: ", diff)
         time.sleep(1)
         continue
-    
     else:
         continue
     time.sleep(1)
