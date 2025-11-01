@@ -1,23 +1,29 @@
-from machine import Pin, UART, PWM, ADC, I2C
+"""
+This copy contains the identical code of pico_PWM.py minus the imports,
+the variables that initialize hardware, and the main loop.
+This is done for testing purposes.
+"""
+
+#from machine import Pin, UART, PWM, ADC, I2C
 import time
-from ads1x15 import ADS1015
+#from ads1x15 import ADS1015
 
 # Serial Communication Setup
-uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
-uart.init(bits=8, parity=None, stop=1)
+#uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+#uart.init(bits=8, parity=None, stop=1)
 
 # GPIO 0 as PWM output channel
-pwm = PWM(Pin(0))
-pwm.freq(1000)
+#pwm = PWM(Pin(0))
+#pwm.freq(1000)
 
 # potentiometer on A1 to change PWM value
-potentiometer = ADC(1)  
+#potentiometer = ADC(1)  
 
 # Measurement Setup for ADS1015
 ADS1015_ADDR = 0x48 # I2C address
 ADS1015_PWM = 2  # port 2 has PWM signal
-i2c = I2C(1, sda=Pin(14), scl=Pin(15)) 
-adc = ADS1015(i2c, ADS1015_ADDR, 1) 
+#i2c = I2C(1, sda=Pin(14), scl=Pin(15)) 
+#adc = ADS1015(i2c, ADS1015_ADDR, 1) 
 
 # Transmit to opposite Pico the PWM duty cycle value
 def transmit(): 
@@ -76,30 +82,30 @@ If "Initial transmit" message is received, measure and return PWM.
 If "Measured transmit" message is received, calculate and print difference.
 If message is invalid, ignore and continue.
 """
-while True:
-    received = read()
-    if received is None:
-        transmited = transmit()
-    time.sleep(1)
-    if received and received.startswith("Initial transmit:"):
-        initial = extract_pwm_value(received)
-        if initial is None:
-            continue
-        print("Pico received initial transmit PWM: ", initial)
-        time.sleep(2)
-        measure_and_return_pwm()
-        time.sleep(1)
-    if received and received.startswith("Measured transmit:"):
-        measured = extract_pwm_value(received)
-        if measured is None:
-            continue
-        print ("Pico received measured PWM: ", measured)
-        time.sleep(2)
-        diff = difference(transmited, measured)
-        print("Difference between transmitted and measured PWM: ", diff)
-        time.sleep(1)
-        continue
-    else:
-        continue
-    time.sleep(1)
+# while True:
+#     received = read()
+#     if received is None:
+#         transmited = transmit()
+#     time.sleep(1)
+#     if received and received.startswith("Initial transmit:"):
+#         initial = extract_pwm_value(received)
+#         if initial is None:
+#             continue
+#         print("Pico received initial transmit PWM: ", initial)
+#         time.sleep(2)
+#         measure_and_return_pwm()
+#         time.sleep(1)
+#     if received and received.startswith("Measured transmit:"):
+#         measured = extract_pwm_value(received)
+#         if measured is None:
+#             continue
+#         print ("Pico received measured PWM: ", measured)
+#         time.sleep(2)
+#         diff = difference(transmited, measured)
+#         print("Difference between transmitted and measured PWM: ", diff)
+#         time.sleep(1)
+#         continue
+#     else:
+#         continue
+#     time.sleep(1)
 
