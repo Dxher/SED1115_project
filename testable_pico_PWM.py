@@ -27,7 +27,15 @@ ADS1015_PWM = 2  # port 2 has PWM signal
 
 # Transmit to opposite Pico the PWM duty cycle value
 def transmit(): 
-    duty = potentiometer.read_u16()    # read potentionmeter value (0–65535)          
+    try:
+        duty = potentiometer.read_u16()    # read potentionmeter value (0–65535)
+    except Exception as e:
+        print("Error reading potentiometer:", e)
+        duty = 0
+    if duty < 0:
+        duty = 0
+    elif duty > 65535:
+        duty = 65535          
     pwm.duty_u16(duty)                 # set PWM duty cycle
     uart.write("Initial transmit: %d\n" % duty)
     print("Pico transmitting ", duty)
@@ -35,19 +43,23 @@ def transmit():
 
 # Measure PWM duty cycle and return measured value
 def measure_and_return_pwm():
-    adc_value = adc.read(0, ADS1015_PWM)                    # raw digital value (0-2047 for the ADS1015)
-    # GPT Calculation
-    duty_percent = (adc_value / 2047) * (4.096 / 3.3) * 100 # convert to duty cycle percentage
-    duty_cycle = duty_percent * 65535 / 100                 # convert to 16-bit value
-    duty_cycle = int(duty_cycle)
-    # Prevent out of bounds
-    if duty_cycle < 0:
-        duty_cycle = 0
-    elif duty_cycle > 65535:
-        duty_cycle = 65535
-    print("Measured and returned PWM value: ", duty_cycle)
-    uart.write("Measured transmit: %d\n" % duty_cycle)
-    return duty_cycle
+    try:
+        adc_value = adc.read(0, ADS1015_PWM)                    # raw digital value (0-2047 for the ADS1015)
+        # GPT Calculation
+        duty_percent = (adc_value / 2047) * (4.096 / 3.3) * 100 # convert to duty cycle percentage
+        duty_cycle = duty_percent * 65535 / 100                 # convert to 16-bit value
+        duty_cycle = int(duty_cycle)
+        # Prevent out of bounds
+        if duty_cycle < 0:
+            duty_cycle = 0
+        elif duty_cycle > 65535:
+            duty_cycle = 65535
+        print("Measured and returned PWM value: ", duty_cycle)
+        uart.write("Measured transmit: %d\n" % duty_cycle)
+        return duty_cycle
+    except Exception as e:
+        print("Error reading ADC:", e)
+        return None
 
 # Read data from opposite Pico
 def read():
@@ -72,7 +84,10 @@ def extract_pwm_value(message):
 
 # Calculate difference between transmitted and measured PWM
 def difference(transmited, measured):
-    return int(transmited - measured)
+    if transmited is None or measured is None:
+        return None
+    diff = transmited - measured
+    return diff
 
 
 """
